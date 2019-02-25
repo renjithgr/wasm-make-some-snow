@@ -1,6 +1,6 @@
 #[macro_use]
 extern crate cfg_if;
-extern crate web_sys;
+extern crate js_sys;
 extern crate wasm_bindgen;
 
 use wasm_bindgen::prelude::*;
@@ -27,20 +27,85 @@ cfg_if! {
     }
 }
 
-// Called by our JS entry point to run the example.
 #[wasm_bindgen]
-pub fn run() -> Result<(), JsValue> {
-    set_panic_hook();
+pub fn rand_between(min: f64, max: f64) -> f64 {
+    (js_sys::Math::random() * (max - min) + min) as f64
+}
 
-    let window = web_sys::window().expect("should have a Window");
-    let document = window.document().expect("should have a Document");
+#[wasm_bindgen]
+pub fn rand_int(n: i32) -> i32 {
+    (js_sys::Math::random() * n as f64) as i32
+}
 
-    let p: web_sys::Node = document.create_element("p")?.into();
-    p.set_text_content(Some("Hello from Rust, WebAssembly, and Webpack!"));
+#[wasm_bindgen]
+pub fn rand_dir() -> i32 {
+    let i = rand_int(1000);
+    (i % 3) - 1
+}
 
-    let body = document.body().expect("should have a body");
-    let body: &web_sys::Node = body.as_ref();
-    body.append_child(&p)?;
+#[wasm_bindgen]
+pub struct Snowflake {
+    maxWidth: f64,
+    maxHeight: f64,
+    x: f64,
+    y: f64,
+    velocity_x: f64,
+    velocity_y: f64,
+    radius: f64,
+    alpha: f64
+}
 
-    Ok(())
+#[wasm_bindgen]
+impl Snowflake {
+
+    pub fn tick(&mut self) {
+        self.x = self.x + self.velocity_x;
+        self.y = self.y + self.velocity_y;
+
+        if(self.y + self.radius > self.maxHeight) {
+            self.x = rand_between(0.0, self.maxWidth);
+            self.y = rand_between(0.0, -self.maxHeight);
+            self.velocity_x = rand_between(-3.0, 3.0);
+            self.velocity_y = rand_between(2.0, 5.0);
+            self.radius = rand_between(1.0, 2.0);
+            self.alpha = rand_between(0.1, 0.9);
+        }
+    }
+
+    pub fn new(maxWidth: f64, maxHeight: f64) -> Snowflake {
+        Snowflake {
+            maxWidth: maxWidth,
+            maxHeight: maxHeight,
+            x: rand_between(0.0, maxWidth),
+            y: rand_between(0.0, maxHeight),
+            velocity_x: rand_between(-3.0, 3.0),
+            velocity_y: rand_between(2.0, 5.0),
+            radius: rand_between(1.0, 4.0),
+            alpha: rand_between(0.1, 0.9)
+        }
+    }
+
+    pub fn x(&self) -> f64 {
+        self.x
+    }
+
+    pub fn y(&self) -> f64 {
+        self.y
+    }
+
+    pub fn velocity_x(&self) -> f64 {
+        self.velocity_x
+    }
+
+    pub fn velocity_y(&self) -> f64 {
+        self.velocity_y
+    }
+
+    pub fn radius(&self) -> f64 {
+        self.radius
+    }
+
+    pub fn alpha(&self) -> f64 {
+        self.alpha
+    }
 }

@@ -1,4 +1,4 @@
-# 🦀:snowflake: `Wasm - Make Some SNOW!`
+# :crab::snowflake: `Wasm - Make Some SNOW!`
 
 WebAssembly port of the [**:snowflake: Let's make some SNOW!**](https://www.youtube.com/watch?v=VW8qoyYzWGg "Link to Paul's make some snow tutorial") tutorial by the awesome Paul Lewis ([@paullewis](https://github.com/paullewis)).
 
